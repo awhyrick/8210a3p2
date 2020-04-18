@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import CustomerSerializer
 
-
 # Create your views here.
 now = timezone.now()
 def home(request):
@@ -49,8 +48,9 @@ def customer_delete(request, pk):
 
 @login_required
 def misc_list(request):
-   miscs = misc.objects.filter(created_date__lte=timezone.now())
-   return render(request, 'portfolio/misc_list.html', {'miscs': miscs})
+   misc = Misc.objects.filter(created_date__lte=timezone.now())
+   return render(request, 'portfolio/misc_list.html',
+        {'miscs': misc})
 
 @login_required
 def misc_new(request):
@@ -60,7 +60,7 @@ def misc_new(request):
            misc = form.save(commit=False)
            misc.created_date = timezone.now()
            misc.save()
-           misc = misc.objects.filter(created_date__lte=timezone.now())
+           misc = Misc.objects.filter(created_date__lte=timezone.now())
            return render(request, 'portfolio/misc_list.html',
                          {'miscs': misc})
    else:
@@ -77,8 +77,8 @@ def misc_edit(request, pk):
            misc = form.save()
            misc.updated_date = timezone.now()
            misc.save()
-           misc = misc.objects.filter(date=timezone.now())
-           return render(request, 'portfolio/misc_list.html', {'misc': misc})
+           misc = Misc.objects.filter(date=timezone.now())
+           return render(request, 'portfolio/misc_list.html', {'miscs': misc})
    else:
        # print("else")
        form = MiscForm(instance=misc)
@@ -92,45 +92,45 @@ def misc_delete(request, pk):
 
 @login_required
 def asset_list(request):
-    asset = asset.objects.filter(created_date__lte=timezone.now())
+    asset = Asset.objects.filter(created_date__lte=timezone.now())
     return render(request, 'portfolio/asset_list.html',
                  {'assets': asset})
 
 @login_required
 def asset_new(request):
    if request.method == "POST":
-       form = assetForm(request.POST)
+       form = AssetForm(request.POST)
        if form.is_valid():
            asset = form.save(commit=False)
            asset.created_date = timezone.now()
            asset.save()
-           asset = asset.objects.filter(created_date__lte=timezone.now())
+           asset = Asset.objects.filter(created_date__lte=timezone.now())
            return render(request, 'portfolio/asset_list.html',
                          {'assets': asset})
    else:
-       form = assetForm()
+       form = AssetForm()
        # print("Else")
    return render(request, 'portfolio/asset_new.html', {'form': form})
 
 @login_required
 def asset_edit(request, pk):
-    asset = get_object_or_404(asset, pk=pk)
+    asset = get_object_or_404(Asset, pk=pk)
     if request.method == "POST":
-       form = assetForm(request.POST, instance=asset)
+       form = AssetForm(request.POST, instance=asset)
        if form.is_valid():
            asset = form.save()
            asset.updated_date = timezone.now()
            asset.save()
-           asset = asset.objects.filter(created_date__lte=timezone.now())
+           asset = Asset.objects.filter(created_date__lte=timezone.now())
            return render(request, 'portfolio/asset_list.html', {'assets': asset})
     else:
        # print("else")
-       form = assetForm(instance=asset)
+       form = AssetForm(instance=asset)
     return render(request, 'portfolio/asset_edit.html', {'form': form})
 
 @login_required
 def asset_delete(request, pk):
-   asset = get_object_or_404(asset, pk=pk)
+   asset = get_object_or_404(Asset, pk=pk)
    asset.delete()
    return redirect('portfolio:asset_list')
 
